@@ -14,32 +14,46 @@ namespace SerializePeople
     [Serializable]
     public class Person
     {
-        private String name = null;
+        public string Name { get; set; }
         private Genders gender;
-        private int Age;
+        private DateTime birthDate;
+        [NonSerialized]
+        private int age;
 
-        public enum Genders:int {Male, Female};
+        
+        
+
+        public Genders Gender { get => gender; private set => gender = value; }
+        public DateTime BirthDate { get => birthDate; set => birthDate = value; }
+        public int Age { get => age; }
+
+        public enum Genders : int { Male, Female };
 
         public Person()
         {
         }
 
-        public Person(String name,DateTime birthDate,Genders gender)
+        public Person(String name, DateTime birthDate, Genders gender)
         {
-            this.name = name;
-            Age = (int)(DateTime.Now.Year-birthDate.Year);
-            this.gender = gender;
+            this.Name = name;
+            this.BirthDate = birthDate;
+            this.age = (int)(DateTime.Now.Year - BirthDate.Year);
+            this.Gender = gender;
         }
 
         public override string ToString()
         {
-            return String.Format("{0} is {1} and {2} years old.", name, gender, Age);
+            return String.Format("{0} is {1} and {2} years old.", Name, Gender, Age);
         }
 
-        
+
         public void Serialize(string output)
         {
-            var fileName = @$"C:\Users\Felhasználó\Documents\.NET modul\SI_assignments\2ndSIWeek\Serialization\{output}.txt";
+
+            var current = Directory.GetCurrentDirectory();
+
+
+            var fileName = Path.Combine(current, $"{output}.txt");
 
             // Create file to save the data
             if (File.Exists(fileName))
@@ -47,25 +61,50 @@ namespace SerializePeople
                 File.Delete(fileName);
             }
 
-            FileStream fs = new FileStream(fileName, FileMode.Create);
+            using (FileStream fs = new FileStream(fileName, FileMode.Create))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                try
+                {
+                    formatter.Serialize(fs, this);
+                }
+                catch (SerializationException e)
+                {
+                    Console.WriteLine("Failed to serialize. Reason: " + e.Message);
+                    throw;
+                }
 
-            // Create and use a BinaryFormatter object to perform the serialization
-            BinaryFormatter formatter = new BinaryFormatter();
+            }
+        }
+        public static Person Deserialize(string readFrom)
+        {
+            var current = Directory.GetCurrentDirectory();
+
+
+            var fileName = Path.Combine(current, $"{readFrom}.txt");
+
+            Person person = new Person();
+
+            FileStream fs = new FileStream(fileName, FileMode.Open);
             try
             {
-                formatter.Serialize(fs, this);
+                BinaryFormatter formatter = new BinaryFormatter();
+
+                person = (Person)formatter.Deserialize(fs);
             }
             catch (SerializationException e)
             {
-                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
+                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
                 throw;
             }
-
-            // Close the file
             finally
             {
                 fs.Close();
             }
+
+            return person;
+
         }
+
     }
 }
