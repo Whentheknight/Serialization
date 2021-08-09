@@ -12,7 +12,7 @@ using System.Collections;
 namespace SerializePeople
 {
     [Serializable]
-    public class Person
+    public class Person: IDeserializationCallback
     {
         public string Name { get; set; }
         private Genders gender;
@@ -106,5 +106,9 @@ namespace SerializePeople
 
         }
 
+        public void OnDeserialization(object sender)
+        {
+            age = (int)(DateTime.Now.Year - BirthDate.Year);
+        }
     }
 }
