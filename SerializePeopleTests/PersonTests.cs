@@ -45,8 +45,7 @@ namespace SerializePeople.Tests
                     readLines += sr.ReadLine();
                 }
             }
-
-            Assert.IsTrue(readLines.Contains(person.Name));
+            Assert.IsTrue(readLines.Contains("birth date"));
         }
 
         [Test]
@@ -54,7 +53,7 @@ namespace SerializePeople.Tests
         {
             var readFrom = "test";
             Assert.AreEqual(person.Gender,Person.Deserialize(readFrom).Gender);
-            Console.WriteLine(Person.Deserialize(readFrom).Age);
+            Console.WriteLine(Person.Deserialize(readFrom).Name);
         }
     }
 }

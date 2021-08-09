@@ -12,9 +12,10 @@ using System.Collections;
 namespace SerializePeople
 {
     [Serializable]
-    public class Person: IDeserializationCallback
+    public class Person: IDeserializationCallback, ISerializable
     {
-        public string Name { get; set; }
+        private string name;
+        public string Name { get=>name; set=>name = value; }
         private Genders gender;
         private DateTime birthDate;
         [NonSerialized]
@@ -109,6 +110,21 @@ namespace SerializePeople
         public void OnDeserialization(object sender)
         {
             age = (int)(DateTime.Now.Year - BirthDate.Year);
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("name", name, typeof(string));
+            info.AddValue("birth date", birthDate, typeof(DateTime));
+            info.AddValue("gender", gender, typeof(Genders));
+        }
+
+        public Person(SerializationInfo info, StreamingContext context)
+        {
+            // Reset the property value using the GetValue method.
+            name = (string)info.GetValue("name", typeof(string));
+            birthDate = (DateTime)info.GetValue("birth date", typeof(DateTime));
+            gender = (Genders)info.GetValue("gender", typeof(Genders));
         }
     }
 }
