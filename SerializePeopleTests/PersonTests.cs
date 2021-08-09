@@ -22,5 +22,11 @@ namespace SerializePeople.Tests
         {
             Assert.AreEqual("Bela is Male and 33 years old.",person.ToString());
         }
+
+        [TestMethod()]
+        public void SerializeTest()
+        {
+
+        }
     }
 }
